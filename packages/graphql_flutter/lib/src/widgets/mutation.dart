@@ -53,17 +53,19 @@ class MutationState extends State<Mutation> {
 
   // TODO is it possible to extract shared logic into mixin
   void _initQuery() {
-    client = GraphQLProvider.of(context).value;
-    assert(client != null);
-
     observableQuery?.close();
-    observableQuery = client.watchQuery(_options);
+    observableQuery = this.client.watchQuery(_options);
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _initQuery();
+    final GraphQLClient client = GraphQLProvider.of(context).value;
+    assert(client != null);
+    if (client != this.client) {
+      this.client = client;
+      _initQuery();
+    }
   }
 
   @override
